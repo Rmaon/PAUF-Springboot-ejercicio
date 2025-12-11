@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -27,17 +28,19 @@ public class Sprint {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "estado_id", nullable = false)
+    @JsonIgnore
     private EstadoSprint estado;
 
-    @Column(nullable = false)
     @OneToMany(
             mappedBy = "sprint",
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             orphanRemoval = true
     )
+    @JsonIgnore
     private Set<Tarea> tareas = new HashSet<>();
 
+    public Sprint() {}
 
     public Sprint(Long id, String nombre, LocalDate fechaInicio, LocalDate fechaFin,
                   String objetivo, EstadoSprint estado) {
@@ -96,5 +99,13 @@ public class Sprint {
 
     public void setEstado(EstadoSprint estado) {
         this.estado = estado;
+    }
+
+    public Set<Tarea> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(Set<Tarea> tareas) {
+        this.tareas = tareas;
     }
 }

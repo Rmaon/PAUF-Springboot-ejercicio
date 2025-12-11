@@ -1,8 +1,9 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tarea")
@@ -41,6 +42,18 @@ public class Tarea {
     @Column(name = "ult_actualizacion", nullable = false)
     private LocalDateTime ultActualizacion;
 
+    @ManyToOne
+    @JoinColumn(name = "sprint_id")
+    private Sprint sprint;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "tarea_etiqueta",
+            joinColumns = @JoinColumn(name = "tarea_id"),
+            inverseJoinColumns = @JoinColumn(name = "etiqueta_id")
+    )
+    private Set<Etiqueta> etiquetas = new HashSet<>();
+
     public Tarea() {}
 
     @PrePersist
@@ -54,8 +67,17 @@ public class Tarea {
         this.ultActualizacion = LocalDateTime.now();
     }
 
-    // Getters y setters
+    public void addEtiqueta(Etiqueta etiqueta) {
+        this.etiquetas.add(etiqueta);
+        etiqueta.getTareas().add(this);
+    }
 
+    public void removeEtiqueta(Etiqueta etiqueta) {
+        this.etiquetas.remove(etiqueta);
+        etiqueta.getTareas().remove(this);
+    }
+
+    // Getters y setters
     public Long getId() {
         return id;
     }
@@ -134,5 +156,21 @@ public class Tarea {
 
     public void setUltActualizacion(LocalDateTime ultActualizacion) {
         this.ultActualizacion = ultActualizacion;
+    }
+
+    public Sprint getSprint() {
+        return sprint;
+    }
+
+    public void setSprint(Sprint sprint) {
+        this.sprint = sprint;
+    }
+
+    public Set<Etiqueta> getEtiquetas() {
+        return etiquetas;
+    }
+
+    public void setEtiquetas(Set<Etiqueta> etiquetas) {
+        this.etiquetas = etiquetas;
     }
 }
